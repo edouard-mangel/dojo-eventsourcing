@@ -9,10 +9,10 @@
             var ampoule = getAmpoule("ampoule");
 
             ampoule = ampoule.Eteindre();
-            ampoule = ampoule.Allumer();
             ampoule = ampoule.Eteindre();
             ampoule = ampoule.Allumer();
             ampoule = ampoule.Eteindre();
+            ampoule = ampoule.Allumer();
             ampoule.SauvegarderSurDisque();
         }
 
