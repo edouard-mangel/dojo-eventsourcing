@@ -19,13 +19,13 @@ internal class Ampoule
 
     public bool EstAllume { get; set; } = false;
 
-    private Ampoule Switch(AmpouleCommand command)
+    private static AmpouleEvent Decide(Ampoule ampoule, AmpouleCommand command)
     {
         AmpouleEvent evenement;
         switch (command)
         {
             case AmpouleCommand.SwitchOff:
-                if (!EstAllume || NbUtilisationsRestantes == 0)
+                if (!ampoule.EstAllume || ampoule.NbUtilisationsRestantes == 0)
                     evenement = AmpouleEvent.None;
                 else
                 {
@@ -33,10 +33,10 @@ internal class Ampoule
                 }
                 break;
             case AmpouleCommand.SwitchOn:
-                if (EstAllume || NbUtilisationsRestantes == 0)
+                if (ampoule.EstAllume || ampoule.NbUtilisationsRestantes == 0)
                 {
                     evenement = AmpouleEvent.None;
-                } else if (NbUtilisationsRestantes <= 1)
+                } else if (ampoule.NbUtilisationsRestantes <= 1)
                 {
                     evenement = AmpouleEvent.Claquer;
                 } else
@@ -48,30 +48,35 @@ internal class Ampoule
                 evenement = AmpouleEvent.None;
                 break;
         }
+        return evenement; 
+    
+    }
 
+    public static Ampoule Evolve(Ampoule ampoule, AmpouleEvent evenement)
+    { 
         switch (evenement)
         {
             case AmpouleEvent.Allumer:
-                return new Ampoule(this.Id, this.NbUtilisationsRestantes - 1, true);
+                return new Ampoule(ampoule.Id, ampoule.NbUtilisationsRestantes - 1, true);
             case AmpouleEvent.Eteindre:
-                return new Ampoule(this.Id, this.NbUtilisationsRestantes, false);
+                return new Ampoule(ampoule.Id, ampoule.NbUtilisationsRestantes, false);
             case AmpouleEvent.Claquer:
                 Console.WriteLine("L'ampoule a claqué.");
-                return new Ampoule(this.Id, 0, false);
+                return new Ampoule(ampoule.Id, 0, false);
             case AmpouleEvent.None:
             default:
-                return this;
+                return ampoule;
         }
     }
 
     public Ampoule Allumer()
     {
-        return this.Switch(AmpouleCommand.SwitchOn);        
+        return Ampoule.Evolve(this, Decide(this, AmpouleCommand.SwitchOn));        
     }
 
     public Ampoule Eteindre()
     {
-        return this.Switch(AmpouleCommand.SwitchOff);
+        return Ampoule.Evolve(this, Decide(this, AmpouleCommand.SwitchOff));
     }
 
     public void SauvegarderSurDisque()
