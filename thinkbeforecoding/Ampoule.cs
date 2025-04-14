@@ -18,24 +18,39 @@ internal class Ampoule
     }
 
     public bool EstAllume { get; set; } = false;
-    public Ampoule Allumer()
-    {
-        AmpouleEvent evenement ;
 
-        if (EstAllume || NbUtilisationsRestantes == 0)
+    private Ampoule Switch(AmpouleCommand command)
+    {
+        AmpouleEvent evenement;
+        switch (command)
         {
-            evenement = AmpouleEvent.None;
-        } else if (NbUtilisationsRestantes <= 1)
-        {
-            evenement = AmpouleEvent.Claquer;
-        } else
-        {
-            evenement = AmpouleEvent.Allumer;
+            case AmpouleCommand.SwitchOff:
+                if (!EstAllume || NbUtilisationsRestantes == 0)
+                    evenement = AmpouleEvent.None;
+                else
+                {
+                    evenement = AmpouleEvent.Eteindre;
+                }
+                break;
+            case AmpouleCommand.SwitchOn:
+                if (EstAllume || NbUtilisationsRestantes == 0)
+                {
+                    evenement = AmpouleEvent.None;
+                } else if (NbUtilisationsRestantes <= 1)
+                {
+                    evenement = AmpouleEvent.Claquer;
+                } else
+                {
+                    evenement = AmpouleEvent.Allumer;
+                }
+                break;
+            default:
+                evenement = AmpouleEvent.None;
+                break;
         }
 
         switch (evenement)
         {
-            
             case AmpouleEvent.Allumer:
                 return new Ampoule(this.Id, this.NbUtilisationsRestantes - 1, true);
             case AmpouleEvent.Eteindre:
@@ -49,13 +64,14 @@ internal class Ampoule
         }
     }
 
+    public Ampoule Allumer()
+    {
+        return this.Switch(AmpouleCommand.SwitchOn);        
+    }
+
     public Ampoule Eteindre()
     {
-        if (EstAllume)
-        {
-            return new Ampoule(this.Id, this.NbUtilisationsRestantes, false);
-        }   
-        return this; 
+        return this.Switch(AmpouleCommand.SwitchOff);
     }
 
     public void SauvegarderSurDisque()
@@ -72,5 +88,4 @@ internal class Ampoule
 
         Console.WriteLine("Écriture dans le fichier terminée.");
     }
-
 }

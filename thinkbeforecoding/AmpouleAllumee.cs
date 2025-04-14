@@ -12,3 +12,8 @@ public enum AmpouleEvent
     Eteindre = 2,
     Claquer = 3,
 }
+public enum AmpouleCommand
+{
+    SwitchOff = 0,
+    SwitchOn = 1,
+}
